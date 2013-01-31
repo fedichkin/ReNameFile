@@ -16,16 +16,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
 import ru.fedichkindenis.file.ProcessFile;
+import ru.fedichkindenis.stream.FStream;
+
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
 @SuppressWarnings("serial")
-public class MainWin extends JFrame {
+public class MainWin extends JFrame implements UpdateInfo{
 
 	private JPanel contentPane;
 	private JTextField pathDir;
@@ -33,6 +36,8 @@ public class MainWin extends JFrame {
 	private JButton button;
 	private JScrollPane scrollPane;
 	private JList listFile;
+	private ArrayList<String> pathFiles = new ArrayList<String>();
+	private FStream fs = null;
 
 	/**
 	 * Create the frame.
@@ -81,15 +86,33 @@ public class MainWin extends JFrame {
 		gbc_btnBrowse.gridy = 0;
 		contentPane.add(btnBrowse, gbc_btnBrowse);
 		
+		final MainWin mw = this;
+		
 		button = new JButton("\u0421\u043A\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u0442\u044C");
 		button.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 				
 				File f = new File(pathDir.getText());
-				
+
 				if(f.isDirectory()){
 					
-					listFile.setListData(ProcessFile.findNEF(f).toArray());
+					fs = new FStream();
+					pathFiles.clear();
+					try {
+						fs.setMethod(ProcessFile.class.getMethod("findNEF", File.class, UpdateInfo.class));
+						fs.setObject(new ProcessFile());
+						fs.setArgs(f, mw);
+						
+						fs.start();
+						
+					} catch (SecurityException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NoSuchMethodException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -99,6 +122,26 @@ public class MainWin extends JFrame {
 		gbc_button.gridx = 0;
 		gbc_button.gridy = 1;
 		contentPane.add(button, gbc_button);
+		
+		
+		JButton button1 = new JButton("!!!");
+		GridBagConstraints gbc_button1 = new GridBagConstraints();
+		gbc_button1.anchor = GridBagConstraints.NORTHWEST;
+		gbc_button1.insets = new Insets(0, 0, 5, 5);
+		gbc_button1.gridx = 1;
+		gbc_button1.gridy = 1;
+		contentPane.add(button1, gbc_button1);
+		
+		button1.addActionListener(new ActionListener() {
+					
+					public void actionPerformed(ActionEvent e) {
+						
+						System.out.println(pathFiles.size());
+						System.out.println(listFile.getModel().getSize());
+						System.out.println(listFile.getModel().getElementAt(0));
+						System.out.println(listFile.getModel().getElementAt(listFile.getModel().getSize() - 1));
+					}
+				});
 		
 		scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -122,17 +165,14 @@ public class MainWin extends JFrame {
 					fin.skip(900);
 					fin.read(b);
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} finally{
 					if(fin != null)
 						try {
 							fin.close();
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 				}
@@ -143,6 +183,14 @@ public class MainWin extends JFrame {
 		fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fileChooser.setDialogTitle("Выберите директорию для поиска");
+	}
+
+	@Override
+	public void sendNewData(String str) {
+		
+		System.out.println(str);
+		pathFiles.add(str);
+		listFile.setListData(pathFiles.toArray());
 	}
 
 }

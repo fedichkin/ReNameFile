@@ -3,9 +3,13 @@ package ru.fedichkindenis.file;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
+import ru.fedichkindenis.main.UpdateInfo;
+
 public class ProcessFile {
 
-	public static ArrayList<String> findNEF(File f){
+	public static ArrayList<String> findNEF(File f, final UpdateInfo ui){
 		
 		ArrayList<String> listFile = new ArrayList<String>();
 		
@@ -17,13 +21,25 @@ public class ProcessFile {
 				
 				String tmp = list[i].getName();
 				
-				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("nef")){
+				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("sql")){
 					
-					listFile.add(list[i].getPath());
+					final String str = list[i].getPath();
+					
+					listFile.add(str);
+
+					SwingUtilities.invokeLater(new Runnable(){
+
+						@Override
+						public void run() {
+							
+							ui.sendNewData(str);
+						}
+						
+					});	
 				}
 			}
 			else if(list[i].isDirectory()){
-				listFile.addAll(findNEF(list[i]));
+				listFile.addAll(findNEF(list[i], ui));
 			}
 		}
 		
