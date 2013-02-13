@@ -26,6 +26,7 @@ import ru.fedichkindenis.stream.FStream;
 
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.JProgressBar;
 
 @SuppressWarnings("serial")
 public class MainWin extends JFrame implements UpdateInfo{
@@ -38,6 +39,7 @@ public class MainWin extends JFrame implements UpdateInfo{
 	private JList listFile;
 	private ArrayList<String> pathFiles = new ArrayList<String>();
 	private FStream fs = null;
+	private JProgressBar progressBar;
 
 	/**
 	 * Create the frame.
@@ -100,10 +102,9 @@ public class MainWin extends JFrame implements UpdateInfo{
 					fs = new FStream();
 					pathFiles.clear();
 					try {
-						fs.setMethod(ProcessFile.class.getMethod("findNEF", File.class, UpdateInfo.class));
-						fs.setObject(new ProcessFile());
-						fs.setArgs(f, mw);
-						
+						fs.addMethod(UpdateInfo.class.getMethod("startUIProcess"), mw);
+						fs.addMethod(ProcessFile.class.getMethod("findNEF", File.class, UpdateInfo.class), new ProcessFile(), f, mw);
+						fs.addMethod(UpdateInfo.class.getMethod("stopUIProcess"), mw);
 						fs.start();
 						
 					} catch (SecurityException e1) {
@@ -123,31 +124,17 @@ public class MainWin extends JFrame implements UpdateInfo{
 		gbc_button.gridy = 1;
 		contentPane.add(button, gbc_button);
 		
-		
-		JButton button1 = new JButton("!!!");
-		GridBagConstraints gbc_button1 = new GridBagConstraints();
-		gbc_button1.anchor = GridBagConstraints.NORTHWEST;
-		gbc_button1.insets = new Insets(0, 0, 5, 5);
-		gbc_button1.gridx = 1;
-		gbc_button1.gridy = 1;
-		contentPane.add(button1, gbc_button1);
-		
-		button1.addActionListener(new ActionListener() {
-					
-					public void actionPerformed(ActionEvent e) {
-						
-						System.out.println(pathFiles.size());
-						System.out.println(listFile.getModel().getSize());
-						System.out.println(listFile.getModel().getElementAt(0));
-						System.out.println(listFile.getModel().getElementAt(listFile.getModel().getSize() - 1));
-					}
-				});
+		progressBar = new JProgressBar();
+		GridBagConstraints gbc_progressBar = new GridBagConstraints();
+		gbc_progressBar.insets = new Insets(0, 0, 5, 0);
+		gbc_progressBar.gridx = 1;
+		gbc_progressBar.gridy = 1;
+		contentPane.add(progressBar, gbc_progressBar);
 		
 		scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.weighty = 1.0;
 		gbc_scrollPane.gridwidth = 2;
-		gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
@@ -191,6 +178,18 @@ public class MainWin extends JFrame implements UpdateInfo{
 		System.out.println(str);
 		pathFiles.add(str);
 		listFile.setListData(pathFiles.toArray());
+	}
+
+	@Override
+	public void startUIProcess() {
+		
+		progressBar.setIndeterminate(true);
+	}
+
+	@Override
+	public void stopUIProcess() {
+		
+		progressBar.setIndeterminate(false);
 	}
 
 }

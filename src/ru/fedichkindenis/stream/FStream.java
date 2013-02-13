@@ -2,47 +2,40 @@ package ru.fedichkindenis.stream;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FStream extends Thread {
 
-	private Object obj = null;
-	private Object res = null;
-	private Method met = null;
-	private Object [] args = null;
+	private List<Object> obj = new ArrayList<Object>();
+	private List<Object> res = new ArrayList<Object>();
+	private List<Method> met = new ArrayList<Method>();
+	private List<Object[]> args = new ArrayList<Object[]>();
 	
-	public void setObject(Object obj){
+	public void addMethod(Method met, Object obj, Object...args){
 		
-		this.obj = obj;
+		this.met.add(met);
+		this.obj.add(obj);
+		this.args.add(args.clone());
 	}
 	
-	public void setArgs(Object...args){
+	public Object getRes(Method met){
 		
-		this.args = args.clone();
-	}
-	
-	public void setMethod(Method met){
-		
-		this.met = met;
-	}
-	
-	public Object getRes(){
-		
-		return res;
+		return res.get(this.met.indexOf(met));
 	}
 	
 	@Override
 	public void run(){
 		
 		try {
-			res = met.invoke(obj, args);
+			for(int i = 0;i < met.size();i++){
+				res.add(met.get(i).invoke(obj.get(i), args.get(i)));
+			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

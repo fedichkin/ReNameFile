@@ -8,20 +8,20 @@ import javax.swing.SwingUtilities;
 import ru.fedichkindenis.main.UpdateInfo;
 
 public class ProcessFile {
-
+	
 	public static ArrayList<String> findNEF(File f, final UpdateInfo ui){
 		
 		ArrayList<String> listFile = new ArrayList<String>();
 		
 		File [] list = f.listFiles();
-		
+
 		for(int i = 0;(list != null) && i < list.length;i++){
 			
 			if(list[i].isFile()){
 				
 				String tmp = list[i].getName();
 				
-				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("sql")){
+				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("doc")){
 					
 					final String str = list[i].getPath();
 					
