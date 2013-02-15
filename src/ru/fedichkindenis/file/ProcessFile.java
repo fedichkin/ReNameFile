@@ -21,7 +21,7 @@ public class ProcessFile {
 				
 				String tmp = list[i].getName();
 				
-				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("doc")){
+				if(tmp.length() > 3 && tmp.substring(tmp.length()-3).equalsIgnoreCase("nef")){
 					
 					final String str = list[i].getPath();
 					
