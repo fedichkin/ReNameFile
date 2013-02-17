@@ -27,6 +27,7 @@ import ru.fedichkindenis.stream.FStream;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.JProgressBar;
+import javax.swing.BoxLayout;
 
 @SuppressWarnings("serial")
 public class MainWin extends JFrame implements UpdateInfo{
@@ -40,6 +41,8 @@ public class MainWin extends JFrame implements UpdateInfo{
 	private ArrayList<String> pathFiles = new ArrayList<String>();
 	private FStream fs = null;
 	private JProgressBar progressBar;
+	private JPanel panel;
+	private JScrollPane scrollPane_1;
 
 	/**
 	 * Create the frame.
@@ -52,7 +55,7 @@ public class MainWin extends JFrame implements UpdateInfo{
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWeights = new double[]{1.0, 0.0};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0};
 		contentPane.setLayout(gbl_contentPane);
 		
 		pathDir = new JTextField();
@@ -133,6 +136,7 @@ public class MainWin extends JFrame implements UpdateInfo{
 		
 		scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.weighty = 1.0;
 		gbc_scrollPane.gridwidth = 2;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
@@ -166,6 +170,18 @@ public class MainWin extends JFrame implements UpdateInfo{
 			}
 		});
 		scrollPane.setViewportView(listFile);
+		
+		panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 0, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 3;
+		contentPane.add(panel, gbc_panel);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		scrollPane_1 = new JScrollPane();
+		panel.add(scrollPane_1);
 		
 		fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
